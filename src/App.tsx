@@ -140,46 +140,39 @@ function LoginView() {
   };
 
   return (
-    <div className="h-screen w-screen bg-slate-100 flex items-center justify-center p-6 font-sans relative overflow-hidden">
-      {/* Decorative Gradients */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50 -mr-48 -mt-48" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-200 rounded-full blur-3xl opacity-50 -ml-48 -mb-48" />
+    <div className="h-screen w-screen bg-slate-50 flex items-center justify-center p-6 font-sans relative overflow-hidden">
+      {/* Decorative Gradients for a clean professional look */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-[120px] opacity-40 -mr-64 -mt-64" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-slate-200 rounded-full blur-[120px] opacity-40 -ml-64 -mb-64" />
 
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-lg bg-white p-12 rounded-[2.5rem] border border-slate-200 shadow-2xl relative z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md bg-white p-12 rounded-[3rem] border border-slate-200 shadow-2xl relative z-10 text-center"
       >
-        <div className="flex flex-col items-center text-center mb-12">
-          <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-200 mb-8 transform -rotate-3 hover:rotate-0 transition-transform">
-            <ShieldCheck className="text-white w-10 h-10" />
+        <div className="flex flex-col items-center mb-10">
+          <div className="w-20 h-20 bg-slate-900 rounded-3xl flex items-center justify-center shadow-2xl shadow-slate-200 mb-8 border-b-4 border-slate-950">
+            <ShieldCheck className="text-blue-500 w-10 h-10" />
           </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">SIPPG <span className="text-blue-600 font-light tracking-[0.1em]">Sekolah</span></h1>
-          <p className="text-slate-400 mt-3 text-xs font-bold uppercase tracking-[0.25em]">Provinsi Nusa Tenggara Barat</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-none">SIPLAH <span className="text-blue-600">NTB</span></h1>
+          <p className="text-slate-400 mt-4 text-[10px] font-bold uppercase tracking-[0.3em]">Portal Sinkronisasi Aset Pendidikan</p>
         </div>
 
         <div className="space-y-4">
+          <p className="text-slate-500 text-xs font-medium mb-6">Silakan gunakan kredensial resmi Anda untuk mengakses sistem inventaris se-NTB.</p>
+          
           <button 
             onClick={handleLogin}
-            className="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl flex items-center justify-center space-x-3 transition-all hover:bg-slate-800 active:scale-[0.98] shadow-xl group border-b-4 border-slate-950"
+            className="w-full bg-blue-600 text-white font-bold py-5 rounded-2xl flex items-center justify-center space-x-3 transition-all hover:bg-blue-700 active:scale-[0.98] shadow-xl shadow-blue-100 group border-b-4 border-blue-800"
           >
-            <Mail className="w-5 h-5 group-hover:scale-110 transition-transform text-blue-400" />
-            <span>Masuk dengan Email Dinas</span>
+            <Mail className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <span className="tracking-tight">Masuk dengan Email Dinas</span>
           </button>
-          
-          <div className="flex items-center gap-4 py-4 px-6 bg-slate-50 rounded-xl border border-slate-100">
-             <div className="p-2 bg-white rounded-lg shadow-sm">
-                <ShieldCheck className="w-4 h-4 text-slate-400" />
-             </div>
-             <p className="text-slate-400 text-[10px] leading-relaxed font-semibold uppercase tracking-tight">
-               Otentikasi khusus wilayah NTB. Pastikan menggunakan akun dinas yang terdaftar di database sinkronisasi wilayah.
-             </p>
-          </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em]">
-          <span>Security Protocol 2.4</span>
-          <span className="text-blue-600">Dikbud NTB</span>
+        <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-between text-[8px] text-slate-300 font-bold uppercase tracking-[0.2em]">
+          <span>Verifikasi Identitas NTB</span>
+          <span className="text-slate-400">© 2024 DIKBUD</span>
         </div>
       </motion.div>
     </div>
