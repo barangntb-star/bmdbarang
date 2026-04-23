@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System users (Admin or Principal)",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["ADMIN", "PRINCIPAL"] },
+        "schoolName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "name", "role"]
+    },
+    "Item": {
+      "title": "Item",
+      "description": "Goods available in the catalogue",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "acquisitionDate": { "type": "string", "format": "date" },
+        "quantity": { "type": "integer" },
+        "provider": { "type": "string" },
+        "specifications": { "type": "string" },
+        "documentUrl": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "unitPrice": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "acquisitionDate", "quantity", "provider"]
+    },
+    "Procurement": {
+      "title": "Procurement",
+      "description": "Procurement request or record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "requesterId": { "type": "string" },
+        "schoolName": { "type": "string" },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "DELIVERED", "COMPLETED"] },
+        "documentUrl": { "type": "string" },
+        "photoUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["requesterId", "items", "totalAmount", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data"
+    },
+    "/items/{itemId}": {
+      "schema": "Item",
+      "description": "Items catalogue"
+    },
+    "/procurements/{procurementId}": {
+      "schema": "Procurement",
+      "description": "Procurement records"
+    }
+  }
+}

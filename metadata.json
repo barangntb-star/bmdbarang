@@ -1,0 +1,13 @@
+{
+  "name": "SipLah NTB",
+  "description": "Sistem Informasi Pengadaan Barang Sekolah Provinsi NTB",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "Procurement Management",
+    "Admin Dashboard",
+    "Principal Dashboard",
+    "Report Generation"
+  ]
+}

@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isVerifiedEmail() { return request.auth.token.email_verified == true; }
+    
+    // Role based access
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function isAdmin() {
+      return isSignedIn() && (getUserData().role == 'ADMIN' || request.auth.token.email == 'barangntb@gmail.com');
+    }
+    function isPrincipal() {
+      return isSignedIn() && getUserData().role == 'PRINCIPAL';
+    }
+
+    // --- Validation Blueprints ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'name', 'role']) 
+             && data.keys().size() <= 7
+             && data.uid == request.auth.uid
+             && data.email is string && data.email.size() <= 256
+             && data.name is string && data.name.size() <= 128
+             && data.role in ['ADMIN', 'PRINCIPAL'];
+    }
+
+    function isValidItem(data) {
+      return data.keys().hasAll(['name', 'category', 'unitPrice'])
+             && data.name is string && data.name.size() <= 128
+             && data.category is string && data.category.size() <= 64
+             && data.unitPrice is number && data.unitPrice >= 0;
+    }
+
+    function isValidProcurement(data) {
+      return data.keys().hasAll(['requesterId', 'items', 'totalAmount', 'status'])
+             && data.requesterId == request.auth.uid
+             && data.items is list
+             && data.totalAmount is number && data.totalAmount >= 0
+             && data.status in ['PENDING', 'APPROVED', 'DELIVERED', 'COMPLETED'];
+    }
+
+    // --- Match Rules ---
+    
+    match /users/{userId} {
+      allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && isValidUser(incoming()) && isValidId(userId);
+      allow update: if isSignedIn() && request.auth.uid == userId 
+                    && incoming().role == existing().role // Role immutability for principals
+                    && isValidUser(incoming());
+    }
+
+    match /items/{itemId} {
+      allow read: if isSignedIn();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() && isValidItem(incoming());
+    }
+
+    match /procurements/{procurementId} {
+      allow get: if isSignedIn() && (resource.data.requesterId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.requesterId == request.auth.uid || isAdmin());
+      allow create: if isPrincipal() && isValidProcurement(incoming()) && isValidId(procurementId);
+      allow update: if isSignedIn() && (
+        // Principal updating their own (only certain fields, can't change status once approved)
+        (resource.data.requesterId == request.auth.uid && existing().status == 'PENDING' 
+         && incoming().diff(existing()).affectedKeys().hasOnly(['items', 'totalAmount', 'documentUrl', 'photoUrl'])) 
+        ||
+        // Admin updating status
+        (isAdmin() && incoming().diff(existing()).affectedKeys().hasOnly(['status']))
+      ) && isValidProcurement(incoming());
+    }
+  }
+}
