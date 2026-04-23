@@ -18,7 +18,7 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
     function isAdmin() {
-      return isSignedIn() && (getUserData().role == 'ADMIN' || request.auth.token.email == 'barangntb@gmail.com');
+      return isSignedIn() && (request.auth.token.email == 'barangntb@gmail.com' || (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'));
     }
     function isPrincipal() {
       return isSignedIn() && getUserData().role == 'PRINCIPAL';

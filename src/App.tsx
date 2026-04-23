@@ -33,31 +33,37 @@ export default function App() {
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (u) => {
-      setUser(u);
-      if (u) {
-        const docRef = doc(db, 'users', u.uid);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          setProfile(docSnap.data() as UserProfile);
+      try {
+        setUser(u);
+        if (u) {
+          const docRef = doc(db, 'users', u.uid);
+          const docSnap = await getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            setProfile(docSnap.data() as UserProfile);
+          } else {
+            // If first time user, determine role (default to principal unless admin email)
+            const isAdmin = u.email === 'barangntb@gmail.com';
+            const newProfile: UserProfile = {
+              uid: u.uid,
+              email: u.email || '',
+              name: u.displayName || 'User',
+              role: isAdmin ? 'ADMIN' : 'PRINCIPAL',
+              schoolName: isAdmin ? '' : 'SMAN 1 Mataram (Default)',
+              createdAt: new Date().toISOString()
+            };
+            await setDoc(docRef, newProfile);
+            setProfile(newProfile);
+          }
         } else {
-          // If first time user, determine role (default to principal unless admin email)
-          const isAdmin = u.email === 'barangntb@gmail.com';
-          const newProfile: UserProfile = {
-            uid: u.uid,
-            email: u.email || '',
-            name: u.displayName || 'User',
-            role: isAdmin ? 'ADMIN' : 'PRINCIPAL',
-            schoolName: isAdmin ? '' : 'SMAN 1 Mataram (Default)',
-            createdAt: new Date().toISOString()
-          };
-          await setDoc(docRef, newProfile);
-          setProfile(newProfile);
+          setProfile(null);
         }
-      } else {
-        setProfile(null);
+      } catch (error) {
+        console.error("Auth state error:", error);
+        // Optionally handle specific errors, e.g., permission denied
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
   }, []);
 
@@ -134,9 +140,15 @@ export default function App() {
 }
 
 function LoginView() {
-  const handleLogin = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
+  const handleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      // Ensure custom parameters or specific constraints can be added here if needed
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Login failure:", error);
+      alert("Gagal masuk: Pastikan Anda mengizinkan popup di browser Anda atau periksa koneksi internet.");
+    }
   };
 
   return (
